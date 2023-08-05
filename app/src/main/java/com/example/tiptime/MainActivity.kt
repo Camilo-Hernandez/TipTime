@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -46,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -101,6 +103,11 @@ fun TipTimeLayout() {
         EditNumberField(
             label = R.string.bill_amount,
             leadingIcon = R.drawable.money,
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
@@ -119,6 +126,7 @@ fun TipTimeLayout() {
             value = tipInput,
             onValueChanged = { tipInput = it },
             modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth(),
+            keyboardActions = KeyboardActions { focusManager.clearFocus() },
         )
         RoundTheTipRow(
             roundUp = roundUp,
@@ -140,7 +148,8 @@ fun EditNumberField(
     keyboardOptions: KeyboardOptions,
     value: String,
     onValueChanged: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    keyboardActions: KeyboardActions
 ) {
     TextField(
         value = value,
@@ -149,7 +158,8 @@ fun EditNumberField(
         modifier = modifier,
         onValueChange = onValueChanged,
         label = { Text(stringResource(label)) },
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
     )
 }
 
@@ -166,11 +176,12 @@ fun RoundTheTipRow(
     ) {
         Text(text = stringResource(R.string.round_up_tip))
         Switch(
+            checked = roundUp,
+            onCheckedChange = onRoundUpChanged,
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentWidth(Alignment.End),
-            checked = roundUp,
-            onCheckedChange = onRoundUpChanged
+                .wrapContentWidth(Alignment.End)
+
         )
     }
 }
